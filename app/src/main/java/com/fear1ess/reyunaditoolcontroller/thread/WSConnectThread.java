@@ -1,14 +1,19 @@
 package com.fear1ess.reyunaditoolcontroller.thread;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -19,13 +24,13 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
-import com.fear1ess.reyunaditoolcontroller.MainActivity;
+import com.fear1ess.reyunaditoolcontroller.cmd.WSConnectCmd.ServerCmd;
 import com.fear1ess.reyunaditoolcontroller.MainUIHandler;
 
 public class WSConnectThread implements Runnable {
 
     public static String TAG = "reyunaditoolcontroller_log";
-    public static String wsServerUrl = "ws://172.23.2.237:2020";
+    public static String wsServerUrl = "ws://172.23.6.225:2020";
 
     private OkHttpClient mOkhttpClient;
 
@@ -71,15 +76,36 @@ public class WSConnectThread implements Runnable {
 
             Log.d(TAG, "success to connect websocket server!");
 
+            sendMessageToMainUI(MainUIHandler.WEBSOCKET_CONNECT_SUCCESS, webSocket);
+        }
+
+        public void sendMessageToMainUI(int what, Object obj){
             Message msg = Message.obtain();
-            msg.what = MainUIHandler.WEBSOCKET_CONNECT_SUCCESS;
-            msg.obj = webSocket;
+            msg.what = what;
+            msg.obj = obj;
             mainUiHandler.sendMessage(msg);
         }
 
         @Override
         public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
-            super.onMessage(webSocket, text);
+            try {
+                Log.d(TAG, "onMessage: " + text);
+                JSONObject jo = new JSONObject(text);
+                if(!jo.has("cmd")){
+                    webSocket.send("data format error, no cmd param!");
+                    return;
+                }
+                int cmd = jo.getInt("cmd");
+                switch (cmd){
+                    case ServerCmd.NEW_PUSH_MSG:{
+                        sendMessageToMainUI(MainUIHandler.NEW_PUSH_DATA, jo.getJSONObject("data"));
+                        break;
+                    }
+                }
+
+            } catch (JSONException e) {
+                webSocket.send("data format error, not a json-format data!");
+            }
         }
 
         @Override
@@ -111,19 +137,7 @@ public class WSConnectThread implements Runnable {
         }
     }
 
-    public static class ThreadHandlerMsg{
-        public final static int RECONNECT = 0;
+    public static class WSServerMsg{
     }
 
-    public class ThreadHandler extends Handler{
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            switch (msg.what){
-                case ThreadHandlerMsg.RECONNECT:
-                    reconnect();
-                    break;
-                default: break;
-            }
-        }
-    }
 }

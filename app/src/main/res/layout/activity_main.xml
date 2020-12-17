@@ -4,13 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="启动服务"
-        android:id="@+id/start_service_btn">
-    </Button>
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/maintab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/mainviewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </androidx.viewpager2.widget.ViewPager2>
 
 </LinearLayout>

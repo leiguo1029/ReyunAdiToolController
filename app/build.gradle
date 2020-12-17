@@ -8,7 +8,7 @@ android {
     defaultConfig {
         applicationId "com.fear1ess.reyunaditoolcontroller"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
 
