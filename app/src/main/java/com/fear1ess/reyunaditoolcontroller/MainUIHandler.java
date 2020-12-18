@@ -5,13 +5,11 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
+import com.fear1ess.reyunaditoolcontroller.activity.MainActivity;
 import com.fear1ess.reyunaditoolcontroller.adapter.AppInfoAdapter;
 import com.fear1ess.reyunaditoolcontroller.fragment.TabFragment;
-import com.fear1ess.reyunaditoolcontroller.state.AppState;
 import com.fear1ess.reyunaditoolcontroller.model.AppInfo;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;

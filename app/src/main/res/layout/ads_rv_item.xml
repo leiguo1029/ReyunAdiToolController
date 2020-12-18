@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/ads_name"
+        android:layout_margin="5dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:layout_weight="1">
+    </TextView>
+
+    <ImageView
+        android:id="@+id/ads_sdk_state"
+        android:layout_gravity="center_vertical"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:layout_weight="1"
+        android:layout_margin="5dp">
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/ads_data_state"
+        android:layout_gravity="center_vertical"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:layout_weight="1"
+        android:layout_margin="5dp">
+    </ImageView>
+
+</LinearLayout>

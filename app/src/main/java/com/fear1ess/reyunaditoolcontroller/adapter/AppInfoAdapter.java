@@ -26,7 +26,9 @@ public class AppInfoAdapter extends RecyclerView.Adapter<AppInfoAdapter.MyViewHo
 
     public AppInfoAdapter(RecyclerView rv) {
         mAppInfoList = new ArrayList<>();
-        mAppInfoList.add(new AppInfo("fe123","fffsf",null,2));
+        mAppInfoList.add(new AppInfo("apple",null,null,2));
+        mAppInfoList.add(new AppInfo("banana",null,null,2));
+        mAppInfoList.add(new AppInfo("cat",null,null,2));
         mRecyclerview = rv;
     }
 
@@ -34,12 +36,15 @@ public class AppInfoAdapter extends RecyclerView.Adapter<AppInfoAdapter.MyViewHo
         mListener = listener;
     }
 
+    public AppInfo getItem(int pos){
+        return mAppInfoList.get(pos);
+    }
+
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = View.inflate(parent.getContext(),R.layout.appinfo_item,null);
-
-        // v.setClickable(true);
+        v.setClickable(true);
         return new MyViewHolder(v, mListener);
     }
 
@@ -151,6 +156,7 @@ public class AppInfoAdapter extends RecyclerView.Adapter<AppInfoAdapter.MyViewHo
             pkgName = itemView.findViewById(R.id.text1);
             appName = itemView.findViewById(R.id.text2);
             state = itemView.findViewById(R.id.appstate);
+            itemView.setOnClickListener(this);
             mListener = listener;
         }
 

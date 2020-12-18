@@ -14,7 +14,9 @@ import android.util.Base64;
 import com.fear1ess.reyunaditoolcontroller.AdiToolControllerApp;
 import com.fear1ess.reyunaditoolcontroller.state.AppState;
 
-public class AppInfo {
+import java.io.Serializable;
+
+public class AppInfo implements Serializable {
     public AppInfo(String pkgName, String app_name, Drawable pkgIcon, int app_state){
         icon=pkgIcon;
         appName=app_name;

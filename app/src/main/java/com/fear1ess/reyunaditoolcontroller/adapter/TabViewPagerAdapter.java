@@ -18,7 +18,6 @@ public class TabViewPagerAdapter extends FragmentStateAdapter {
     private List<String> mTabNameList = new ArrayList<>();
 
     public TabViewPagerAdapter(FragmentActivity fa, List<Fragment> fragmentList) {
-      //  super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         super(fa);
         mFragmentList = fragmentList;
     }

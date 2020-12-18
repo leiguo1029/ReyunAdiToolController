@@ -1,4 +1,4 @@
-package com.fear1ess.reyunaditoolcontroller;
+package com.fear1ess.reyunaditoolcontroller.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +18,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 
+import com.fear1ess.reyunaditoolcontroller.MainUIHandler;
+import com.fear1ess.reyunaditoolcontroller.R;
 import com.fear1ess.reyunaditoolcontroller.adapter.AppInfoAdapter;
 import com.fear1ess.reyunaditoolcontroller.adapter.TabViewPagerAdapter;
 import com.fear1ess.reyunaditoolcontroller.cmd.WSConnectCmd.ClientCmd;
@@ -69,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.maintab);
         ViewPager2 viewPager = findViewById(R.id.mainviewpager);
         List<Fragment> fragmentList = new ArrayList<>();
-        fragmentList.add(TabFragment.newInstance("1"));
-        fragmentList.add(TabFragment.newInstance("2"));
+        fragmentList.add(TabFragment.newInstance());
+        fragmentList.add(TabFragment.newInstance());
         mTabViewPagerAdapter = new TabViewPagerAdapter(this, fragmentList);
         viewPager.setAdapter(mTabViewPagerAdapter);
         new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {

@@ -1,6 +1,7 @@
 package com.fear1ess.reyunaditoolcontroller.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -22,12 +23,8 @@ import com.fear1ess.reyunaditoolcontroller.adapter.AppInfoAdapter;
 
 public class TabFragment extends Fragment {
     private AppInfoAdapter mAdapter;
-    public static TabFragment newInstance(String label) {
-        Bundle args = new Bundle();
-       // args.putString("text", label);
-       // args.putString("label", label);
+    public static TabFragment newInstance() {
         TabFragment fragment = new TabFragment();
-       // fragment.setArguments(args);
         return fragment;
     }
 
@@ -48,7 +45,12 @@ public class TabFragment extends Fragment {
         mAdapter.setOnRecyclerViewItemClickListener(new AppInfoAdapter.OnRecyclerviewItemClickListener() {
             @Override
             public void onItemClick(View view, int pos) {
-                //TODO....
+                //TODO...
+                Intent intent = new Intent();
+                intent.putExtra("appInfo",mAdapter.getItem(pos));
+                intent.setClassName(AdiToolControllerApp.getAppContext(),
+                        "com.fear1ess.reyunaditoolcontroller.activity.AppDetailActivity");
+                startActivity(intent);
             }
         });
         rv.setAdapter(mAdapter);
