@@ -45,7 +45,6 @@ public class TabFragment extends Fragment {
         mAdapter.setOnRecyclerViewItemClickListener(new AppInfoAdapter.OnRecyclerviewItemClickListener() {
             @Override
             public void onItemClick(View view, int pos) {
-                //TODO...
                 Intent intent = new Intent();
                 intent.putExtra("appInfo",mAdapter.getItem(pos));
                 intent.setClassName(AdiToolControllerApp.getAppContext(),
