@@ -5,50 +5,53 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
-import com.fear1ess.reyunaditoolcontroller.activity.MainActivity;
-import com.fear1ess.reyunaditoolcontroller.adapter.AppInfoAdapter;
-import com.fear1ess.reyunaditoolcontroller.fragment.TabFragment;
-import com.fear1ess.reyunaditoolcontroller.model.AppInfo;
-
-import org.json.JSONObject;
-
-import java.lang.ref.WeakReference;
-
-import okhttp3.WebSocket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainUIHandler extends Handler {
     public final static int WEBSOCKET_CONNECT_SUCCESS = 1;
-    public final static int NEW_PUSH_DATA = 2;
+    public final static int NEW_APP_PUSH_DATA = 2;
+    public final static int NEW_ADS_PUSH_DATA = 3;
+    public final static int WEBSOCKET_CONNECT_FAILED = 4;
 
-    private WeakReference<MainActivity> mActivityRef;
-    private AppInfoAdapter mCurAppInfoAdapter;
-    private AppInfoAdapter mHistoryAppInfoAdapter;
-    public MainUIHandler(MainActivity act){
-        mActivityRef = new WeakReference<>(act);
+    private List<NewMsgCallBack> pushMsgCallBacks = new ArrayList<>(AdiToolControllerApp.getMaxDeviceNum());
+    private Map<String, NewMsgCallBack> msgCallBacks = new HashMap<>();
+
+    public void registerPushMsgCallBack(int index, NewMsgCallBack cb) {
+        pushMsgCallBacks.set(index, cb);
+    }
+
+    public void registerMsgCallBack(String name, NewMsgCallBack cb) {
+        msgCallBacks.put(name, cb);
+    }
+
+    public void unRegisterMsgCallBack(String name) {
+        msgCallBacks.remove(name);
+    }
+    public void unRegisterPushMsgCallBack(int index) {
+        pushMsgCallBacks.set(index, null);
+    }
+
+    public void dispatchMsg(NewMsgCallBack cb, Message msg) {
+        if(cb != null) {
+            cb.onNewMessage(msg);
+        }
     }
 
     @Override
     public void handleMessage(@NonNull Message msg) {
-        MainActivity act = mActivityRef.get();
-        switch (msg.what){
-            case WEBSOCKET_CONNECT_SUCCESS:{
-                act.setWebSocketConn((WebSocket) msg.obj);
+        switch (msg.what) {
+            case MainUIHandler.WEBSOCKET_CONNECT_SUCCESS:
+            case MainUIHandler.WEBSOCKET_CONNECT_FAILED:
                 break;
-            }
-            case NEW_PUSH_DATA: {
-                if (mCurAppInfoAdapter == null) {
-                    mCurAppInfoAdapter = ((TabFragment) act.getTabViewPagerAdapter().createFragment(0)).getRecycleViewAdapter();
-                }
-                if (mHistoryAppInfoAdapter == null) {
-                    mHistoryAppInfoAdapter = ((TabFragment) act.getTabViewPagerAdapter().createFragment(1)).getRecycleViewAdapter();
-                }
 
-                JSONObject jo = (JSONObject) msg.obj;
-                AppInfo appInfo = AppInfo.parseFromJson(jo);
-                mCurAppInfoAdapter.update(appInfo);
+            case MainUIHandler.NEW_APP_PUSH_DATA:
+                dispatchMsg(pushMsgCallBacks.get(msg.arg1), msg);
                 break;
-            }
             default: break;
+
         }
     }
 }

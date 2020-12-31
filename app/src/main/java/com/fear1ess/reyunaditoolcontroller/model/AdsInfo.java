@@ -1,20 +1,37 @@
 package com.fear1ess.reyunaditoolcontroller.model;
 
+import com.fear1ess.reyunaditoolcontroller.AdsSdkExistsFlag;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class AdsInfo {
     private String mAdsName;
     private int mAdsSdkFindingState;
     private int mAdsDataFindingState;
 
-    public String getmAdsName() {
+    public String getAdsName() {
         return mAdsName;
     }
 
-    public int getmAdsSdkFindingState() {
+    public int getAdsSdkFindingState() {
         return mAdsSdkFindingState;
     }
 
-    public int getmAdsDataFindingState() {
+    public int getAdsDataFindingState() {
         return mAdsDataFindingState;
+    }
+
+    public void setAdsName(String AdsName) {
+        this.mAdsName = AdsName;
+    }
+
+    public void setAdsSdkFindingState(int AdsSdkFindingState) {
+        this.mAdsSdkFindingState = AdsSdkFindingState;
+    }
+
+    public void setAdsDataFindingState(int AdsDataFindingState) {
+        this.mAdsDataFindingState = AdsDataFindingState;
     }
 
     public AdsInfo(String adsName, int sdkState, int dataState){

@@ -1,8 +1,12 @@
 package com.fear1ess.reyunaditoolcontroller.adapter;
 
 import android.app.Application;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -12,10 +16,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.fear1ess.reyunaditoolcontroller.AdiToolControllerApp;
 import com.fear1ess.reyunaditoolcontroller.R;
 import com.fear1ess.reyunaditoolcontroller.model.AppInfo;
 import com.fear1ess.reyunaditoolcontroller.state.AppState;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +30,16 @@ public class AppInfoAdapter extends RecyclerView.Adapter<AppInfoAdapter.MyViewHo
     private RecyclerView mRecyclerview;
     private OnRecyclerviewItemClickListener mListener;
 
+    public static final int TYPE_HEADER = 0;
+    public static final int TYPE_FOOTER = 1;
+    public static final int TYPE_NORMAL = 2;
+
     public AppInfoAdapter(RecyclerView rv) {
         mAppInfoList = new ArrayList<>();
+        /*
         mAppInfoList.add(new AppInfo("apple",null,null,2));
         mAppInfoList.add(new AppInfo("banana",null,null,2));
-        mAppInfoList.add(new AppInfo("cat",null,null,2));
+        mAppInfoList.add(new AppInfo("cat",null,null,2));*/
         mRecyclerview = rv;
     }
 
@@ -40,18 +51,25 @@ public class AppInfoAdapter extends RecyclerView.Adapter<AppInfoAdapter.MyViewHo
         return mAppInfoList.get(pos);
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if(position == 0) return TYPE_HEADER;
+        return TYPE_NORMAL;
+    }
+
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = View.inflate(parent.getContext(),R.layout.appinfo_item,null);
-        v.setClickable(true);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.appinfo_item, parent, false);
+     //   View v = View.inflate(parent.getContext(), R.layout.appinfo_item, null);
         return new MyViewHolder(v, mListener);
     }
 
-    public String getStateStr(int state){
+    public String getStateStr(int state, int bytesDownloaded){
         switch (state){
             case AppState.APP_DOWNLOADING:
-                return "下载中";
+                int kbytesDownloaded = bytesDownloaded / 1024;
+                return "下载中  " + kbytesDownloaded + "K";
             case AppState.APP_DOWNLOADED_AND_PARPARE_TO_INSTALL:
                 return "等待安装";
             case AppState.APP_INSTALLING:
@@ -63,7 +81,7 @@ public class AppInfoAdapter extends RecyclerView.Adapter<AppInfoAdapter.MyViewHo
             case AppState.APP_REMOVED:
                 return "已移除";
             case AppState.APP_ADSDK_CHECKING:
-                return "正在检测";
+                return "检测中";
             case AppState.APP_INSTALL_FAILED:
                 return "安装失败";
             default: return "???";
@@ -93,7 +111,10 @@ public class AppInfoAdapter extends RecyclerView.Adapter<AppInfoAdapter.MyViewHo
             holder.iconImage.setImageDrawable(appInfo.getIcon());
         }
         if((updateVal & needUpdateState) != 0){
-            holder.state.setText(getStateStr(appInfo.getState()));
+            if(appInfo.getState() == AppState.APP_ADSDK_CHECKING){
+                holder.itemView.setClickable(true);
+            }
+            holder.state.setText(getStateStr(appInfo.getState(), appInfo.getBytesDownloaded()));
         }
 
     }
@@ -101,10 +122,15 @@ public class AppInfoAdapter extends RecyclerView.Adapter<AppInfoAdapter.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         AppInfo appInfo = mAppInfoList.get(position);
-        holder.iconImage.setImageDrawable(appInfo.getIcon());
-        holder.appName.setText(appInfo.getAppName());
+        if(appInfo.getIcon() == null){
+            holder.iconImage.setImageResource(R.mipmap.ic_launcher);
+        }else{
+            holder.iconImage.setImageDrawable(appInfo.getIcon());
+        }
+        String appName = appInfo.getAppName();
+        holder.appName.setText(appName != null ? appName : "未知APP");
         holder.pkgName.setText(appInfo.getPackageName());
-        holder.state.setText(getStateStr(appInfo.getState()));
+        holder.state.setText(getStateStr(appInfo.getState(), appInfo.getBytesDownloaded()));
       //  Log.d("recyclerview_test", "onBindViewHolder: "+appInfo.getAppName());
     }
 
@@ -157,6 +183,7 @@ public class AppInfoAdapter extends RecyclerView.Adapter<AppInfoAdapter.MyViewHo
             appName = itemView.findViewById(R.id.text2);
             state = itemView.findViewById(R.id.appstate);
             itemView.setOnClickListener(this);
+            itemView.setClickable(false);
             mListener = listener;
         }
 
@@ -167,8 +194,8 @@ public class AppInfoAdapter extends RecyclerView.Adapter<AppInfoAdapter.MyViewHo
         }
     }
 
-    public static interface OnRecyclerviewItemClickListener{
-        public void onItemClick(View view, int pos);
+    public interface OnRecyclerviewItemClickListener{
+        void onItemClick(View view, int pos);
     }
 }
 

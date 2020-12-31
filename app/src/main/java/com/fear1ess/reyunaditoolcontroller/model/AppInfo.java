@@ -14,31 +14,36 @@ import android.util.Base64;
 import com.fear1ess.reyunaditoolcontroller.AdiToolControllerApp;
 import com.fear1ess.reyunaditoolcontroller.state.AppState;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 
 public class AppInfo implements Serializable {
-    public AppInfo(String pkgName, String app_name, Drawable pkgIcon, int app_state){
+    public AppInfo(String pkgName, String app_name, Drawable pkgIcon, int bytes_downloaded, int app_state){
         icon=pkgIcon;
         appName=app_name;
-        if(appName == null) appName = "未知APP";
         packageName=pkgName;
         state = app_state;
+        bytesDownloaded = bytes_downloaded;
     }
     private Drawable icon;
     private String packageName;
     private String appName;
     private int state;
+    private int bytesDownloaded = 0;
 
     public Drawable getIcon(){return icon;}
     public String getPackageName(){return packageName;}
     public String getAppName(){return appName;}
     public int getState(){ return state; }
+    public int getBytesDownloaded() { return bytesDownloaded; }
 
     public static AppInfo parseFromJson(JSONObject jo){
         try {
             if(!jo.has("package_name") || !(jo.has("state"))) return null;
             String pkgName = jo.getString("package_name");
             int state = jo.getInt("state");
+            int bytesDownloaded = jo.getInt("bytes_downloaded");
             String appName = null;
             Drawable iconDrawable = null;
             if(jo.has("app_name")){
@@ -51,8 +56,30 @@ public class AppInfo implements Serializable {
                 Resources resources = AdiToolControllerApp.getAppContext().getResources();
                 iconDrawable = new BitmapDrawable(resources, bm);
             }
-            return new AppInfo(pkgName, appName, iconDrawable, state);
+            return new AppInfo(pkgName, appName, iconDrawable, bytesDownloaded, state);
         } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String parseToJsonString(AppInfo appInfo) {
+        try {
+            JSONObject jo = new JSONObject();
+            jo.put("package_name",appInfo.getPackageName());
+            if(appInfo.getAppName() != null){
+                jo.put("app_name", appInfo.getAppName());
+            }
+            if(appInfo.getIcon() != null){
+                Bitmap bm = ((BitmapDrawable) appInfo.getIcon()).getBitmap();
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                String icon_b64 = Base64.encodeToString(bos.toByteArray(), Base64.NO_WRAP);
+                jo.put("icon", icon_b64);
+                bos.close();
+            }
+            return jo.toString();
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -67,37 +94,38 @@ public class AppInfo implements Serializable {
         
         switch(appInfo.state){
             case AppState.APP_DOWNLOADING:
-                packageName = appInfo.packageName;
-                state = appInfo.state;
+                this.packageName = appInfo.packageName;
+                this.state = appInfo.state;
+                this.bytesDownloaded = appInfo.bytesDownloaded;
                 updateVal |= needUpdatePkgName;
                 updateVal |= needUpdateState;
                 break;
             case AppState.APP_DOWNLOADED_AND_PARPARE_TO_INSTALL:
-                state = appInfo.state;
+                this.state = appInfo.state;
                 updateVal |= needUpdateState;
                 break;
             case AppState.APP_INSTALLING:
-                state = appInfo.state;
+                this.state = appInfo.state;
                 updateVal |= needUpdateState;
                 break;
             case AppState.APP_INSTALLED_AND_OPEN:
-                appName = appInfo.appName;
-                icon = appInfo.icon;
-                state = appInfo.state;
+                this.appName = appInfo.appName;
+                this.icon = appInfo.icon;
+                this.state = appInfo.state;
                 updateVal |= needUpdateAppName;
                 updateVal |= needUpdateIcon;
                 updateVal |= needUpdateState;
                 break;
             case AppState.APP_REMOVING:
-                state = appInfo.state;
+                this.state = appInfo.state;
                 updateVal |= needUpdateState;
                 break;
             case AppState.APP_REMOVED:
-                state = appInfo.state;
+                this.state = appInfo.state;
                 updateVal |= needUpdateState;
                 break;
             case AppState.APP_ADSDK_CHECKING:
-                state = appInfo.state;
+                this.state = appInfo.state;
                 updateVal |= needUpdateState;
                 break;
             default: break;

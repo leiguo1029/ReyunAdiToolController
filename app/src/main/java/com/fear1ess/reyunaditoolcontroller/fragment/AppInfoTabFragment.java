@@ -3,6 +3,7 @@ package com.fear1ess.reyunaditoolcontroller.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -18,24 +19,36 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fear1ess.reyunaditoolcontroller.AdiToolControllerApp;
+import com.fear1ess.reyunaditoolcontroller.MainUIHandler;
+import com.fear1ess.reyunaditoolcontroller.NewMsgCallBack;
 import com.fear1ess.reyunaditoolcontroller.R;
 import com.fear1ess.reyunaditoolcontroller.adapter.AppInfoAdapter;
+import com.fear1ess.reyunaditoolcontroller.model.AppInfo;
 
-public class TabFragment extends Fragment {
-    private AppInfoAdapter mAdapter;
-    public static TabFragment newInstance() {
-        TabFragment fragment = new TabFragment();
-        return fragment;
-    }
+import org.json.JSONObject;
+
+public class AppInfoTabFragment extends Fragment {
+    protected AppInfoAdapter mAdapter;
+    protected int mIndex;
+    public static String detail_activity_name = "com.fear1ess.reyunaditoolcontroller.activity.AppDetailActivity";
 
     public AppInfoAdapter getRecycleViewAdapter(){
         return mAdapter;
     }
 
+    public AppInfoTabFragment(int index) {
+        mIndex = index;
+    }
+
+    public static AppInfoTabFragment newInstance(int index, boolean needRegister) {
+        if(needRegister) return new CurAppInfoTabFragment(index);
+        return new AppInfoTabFragment(index);
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //create rv
         Context context = AdiToolControllerApp.getAppContext();
         View v =  inflater.inflate(R.layout.tab_recyclerview, container, false);
         RecyclerView rv = v.findViewById(R.id.recycler_view);
@@ -45,11 +58,9 @@ public class TabFragment extends Fragment {
         mAdapter.setOnRecyclerViewItemClickListener(new AppInfoAdapter.OnRecyclerviewItemClickListener() {
             @Override
             public void onItemClick(View view, int pos) {
-                //TODO...
                 Intent intent = new Intent();
-                intent.putExtra("appInfo",mAdapter.getItem(pos));
-                intent.setClassName(AdiToolControllerApp.getAppContext(),
-                        "com.fear1ess.reyunaditoolcontroller.activity.AppDetailActivity");
+                intent.putExtra("appInfo", AppInfo.parseToJsonString(mAdapter.getItem(pos)));
+                intent.setClassName(AdiToolControllerApp.getAppContext(), detail_activity_name);
                 startActivity(intent);
             }
         });
@@ -57,4 +68,16 @@ public class TabFragment extends Fragment {
         return v;
     }
 
+    public void updateRv(AppInfo appInfo) {
+        mAdapter.update(appInfo);
+    }
+
+    public void removeRv(int pos){
+        mAdapter.remove(pos);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }
