@@ -8,8 +8,8 @@ import static android.content.Context.MODE_PRIVATE;
 public class SharedPreferenceUtils {
     public static String getSharedPreferencesValue(String spName, String key) {
         Context cxt = AdiToolControllerApp.getAppContext();
-        SharedPreferences configuration = cxt.getSharedPreferences("configuration", MODE_PRIVATE);
-        String address = configuration.getString("server_address", null);
+        SharedPreferences configuration = cxt.getSharedPreferences(spName, MODE_PRIVATE);
+        String address = configuration.getString(key, null);
         return address;
     }
 

@@ -39,7 +39,7 @@ public class WSConnectManager {
     private OkHttpClient mOkhttpClient;
     private volatile boolean wsConnected = false;
     private volatile boolean wsThreadRunning = false;
-    private List<WSConnectThread> mWSConnectThreads = new ArrayList<>(AdiToolControllerApp.getMaxDeviceNum());
+    private WSConnectThread[] mWSConnectThreads = new WSConnectThread[AdiToolControllerApp.getMaxDeviceNum()];
 
     public WSConnectManager() {
         //connect to websocket server...
@@ -74,11 +74,11 @@ public class WSConnectManager {
 
     public void newWSConnect(int index, String address) {
         String ipAddress = "ws://" + address;
-        WSConnectThread item = mWSConnectThreads.get(index);
+        WSConnectThread item = mWSConnectThreads[index];
         if(item == null) {
             ExecutorService es = Executors.newSingleThreadExecutor();
             WSConnectThread wct = new WSConnectThread(AdiToolControllerApp.getUiHandler(), mOkhttpClient, ipAddress, index);
-            mWSConnectThreads.set(index, wct);
+            mWSConnectThreads[index] = wct;
             es.execute(wct);
             es.shutdown();
             wsThreadRunning = true;

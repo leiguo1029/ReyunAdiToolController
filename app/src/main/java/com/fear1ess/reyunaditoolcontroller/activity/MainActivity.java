@@ -84,62 +84,20 @@ public class MainActivity extends AppCompatActivity {
                 tab.setText(tabNameList.get(position));
             }
         }).attach();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         startWSConnect();
     }
 
     public void startWSConnect() {
         for (int i = 0; i < AdiToolControllerApp.getMaxDeviceNum(); ++i) {
             String address = SharedPreferenceUtils.getServerConfig(i);
-            if(address != null) {
+            if(address != null && !address.equals("")) {
                 WSConnectManager.getInstance().newWSConnect(i, address);
             }
-        }
-    }
-
-    public void showConfigDialog(String message, String editText) {
-        final EditText et = new EditText(this);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Tip").setMessage("首次使用，请配置服务端IP地址(ip:port)").setIcon(android.R.drawable.ic_dialog_info).setView(et);
-        if(editText != null){
-            et.setText(editText);
-        }
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog ad = builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                String address = et.getText().toString();
-                SharedPreferences configuration = getSharedPreferences("configuration", MODE_PRIVATE);
-                SharedPreferences.Editor editor = configuration.edit();
-                editor.putString("server_address", address);
-                editor.commit();
-                startWSConnect();
-                dialog.dismiss();
-            }
-        }).create();
-        et.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(charSequence == null) return;
-                ad.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-        ad.show();
-        if(editText == null) {
-            ad.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
         }
     }
 
@@ -183,21 +141,4 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-
-    /*
-    @Override
-    public void onNewMessage(Message msg) {
-        switch(msg.what) {
-            case MainUIHandler.WEBSOCKET_CONNECT_SUCCESS:
-                String wsUrl = (String) msg.obj;
-                String address = wsUrl.replace("ws://", "");
-                getSupportActionBar().setTitle("^_^ 已连接  " + address);
-                mStartMenuItem.setEnabled(true);
-                break;
-            case MainUIHandler.WEBSOCKET_CONNECT_FAILED:
-                getSupportActionBar().setTitle(">_< 未连接");
-                break;
-            default: break;
-        }
-    }*/
 }

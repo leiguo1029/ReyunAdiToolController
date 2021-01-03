@@ -35,6 +35,7 @@ public class ServerConfigActivity extends AppCompatActivity {
             View itemView = getLayoutInflater().inflate(R.layout.config_item, v, false);
             TextView tv = itemView.findViewById(R.id.config_tv);
             EditText et = itemView.findViewById(R.id.config_et);
+            et.setText(SharedPreferenceUtils.getServerConfig(i));
             mEditTexts.add(et);
             tv.setText("设备" + (i + 1));
             v.addView(itemView);
@@ -47,6 +48,7 @@ public class ServerConfigActivity extends AppCompatActivity {
             public void onClick(View view) {
                 for(int i = 0; i < mEditTexts.size(); ++i) {
                     String value = mEditTexts.get(i).getText().toString();
+                    if(value == "") value = null;
                     SharedPreferenceUtils.setServerConfig(i, value);
                 }
                 startActivity(new Intent(ServerConfigActivity.this, MainActivity.class));

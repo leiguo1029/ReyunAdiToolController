@@ -16,11 +16,11 @@ public class MainUIHandler extends Handler {
     public final static int NEW_ADS_PUSH_DATA = 3;
     public final static int WEBSOCKET_CONNECT_FAILED = 4;
 
-    private List<NewMsgCallBack> pushMsgCallBacks = new ArrayList<>(AdiToolControllerApp.getMaxDeviceNum());
+    private NewMsgCallBack[] pushMsgCallBacks = new NewMsgCallBack[AdiToolControllerApp.getMaxDeviceNum()];
     private Map<String, NewMsgCallBack> msgCallBacks = new HashMap<>();
 
     public void registerPushMsgCallBack(int index, NewMsgCallBack cb) {
-        pushMsgCallBacks.set(index, cb);
+        pushMsgCallBacks[index] = cb;
     }
 
     public void registerMsgCallBack(String name, NewMsgCallBack cb) {
@@ -31,7 +31,7 @@ public class MainUIHandler extends Handler {
         msgCallBacks.remove(name);
     }
     public void unRegisterPushMsgCallBack(int index) {
-        pushMsgCallBacks.set(index, null);
+        pushMsgCallBacks[index] = null;
     }
 
     public void dispatchMsg(NewMsgCallBack cb, Message msg) {
@@ -45,10 +45,11 @@ public class MainUIHandler extends Handler {
         switch (msg.what) {
             case MainUIHandler.WEBSOCKET_CONNECT_SUCCESS:
             case MainUIHandler.WEBSOCKET_CONNECT_FAILED:
+                dispatchMsg(msgCallBacks.get("task_fragment"), msg);
                 break;
 
             case MainUIHandler.NEW_APP_PUSH_DATA:
-                dispatchMsg(pushMsgCallBacks.get(msg.arg1), msg);
+                dispatchMsg(pushMsgCallBacks[msg.arg1], msg);
                 break;
             default: break;
 

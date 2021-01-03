@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.animation.AlphaAnimation;
 import android.widget.EditText;
 
@@ -40,7 +41,7 @@ public class AdiToolControllerApp extends Application {
     private static Context mAppContext = null;
     private static int maxDeviceNum;
 
-    private static MainUIHandler uiHandler = new MainUIHandler();
+    private static MainUIHandler uiHandler;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -60,6 +61,7 @@ public class AdiToolControllerApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        uiHandler = new MainUIHandler();
     }
 
     public static MainUIHandler getUiHandler(){
